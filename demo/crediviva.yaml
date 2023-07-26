@@ -1,0 +1,642 @@
+openapi: 3.0.1
+servers:
+  - url: https://api.kubbesa.net/demo
+    description: Servidor Demo
+    x-displayName: Demo
+  # - url: https://api.kubbesa.net/dev
+  #   description: Servidor Dev
+  # - url: https://api.kubbesa.net/staging
+  #   description: Servidor Staging
+
+info:
+  description: |
+    # Introducción
+    Este API esta docoumentado en formato **OpenAPI** desarrollado por el equipo de desarrollo de [Crediviva](https://crediviva.com.pa).
+    Para esta documentació, puedes utilizar el api key `special-key` para probar los filtros de autorización.
+
+    # Información de Autenticación 
+
+    Crediviva ofrece la siguiente forma de autenticación:
+      - API Key
+
+    <!-- ReDoc-Inject: <security-definitions> -->
+
+  version: 1.0.0
+  title: Crediviva
+  contact:
+    name: Soporte de API
+    email: dev@crediviva.com.pa
+    url: https://crediviva.com.pa
+  x-logo:
+    url: 'https://i0.wp.com/crediviva.com.pa/wp-content/uploads/2022/03/Logo_300dpi.png?w=3600&ssl=1'
+    altText: Crediviva logo
+tags:
+  - name: Autenticación
+    x-displayName: Autenticación
+    description: Obtiene la información de los tokens asociados al usuario.
+  - name: Solicitudes de Crédito
+    x-displayName: Solicitudes de Crédito
+    description: Accede a las solicitudes de crédito asociadas a tu comercio.
+  - name: Créditos
+    x-displayName: Créditos
+    description: Accede a los créditos asociadas a tu comercio.
+  - name: Departamentos
+    x-displayName: Departamentos
+    description: Operaciones sobre Departamentos para usuarios
+  - name: Roles
+    x-displayName: Roles
+    description: Operaciones sobre roles para usuarios
+  - name: Usuarios
+    x-displayName: Usuarios
+    description: Operaciones sobre usuarios
+  - name: Desembolsos
+    x-displayName: Desembolsos
+    description: Operaciones sobre desembolsos
+  - name: credit_application_model
+    x-displayName: Solicitud de Crédito
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Credit_Application" />
+  - name: credit_model
+    x-displayName: Crédito
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Credit_Application" />
+  - name: client_model
+    x-displayName: Cliente
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Credit_Application" />
+  - name: department_model
+    x-displayName: Departamento
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Credit_Application" />
+  - name: role_model
+    x-displayName: Rol
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Credit_Application" />
+  - name: users_model
+    x-displayName: Usuario
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Credit_Application" />
+x-tagGroups:
+  # - name: Autenticación
+  #   tags:
+  #     - Autenticación
+  - name: Créditos
+    tags:
+      # - Solicitudes de Crédito
+      # - Créditos
+      # - Clientes
+      - Desembolsos
+  # - name: Manejo de Usuarios
+  #   tags:
+  #     - Departamentos
+  #     - Roles
+  #     - Usuarios
+  # - name: Modelos
+  #   tags:
+  #     - credit_application_model
+  #     - credit_model
+  #     - client_model
+  #     - department_model
+  #     - role_model
+  #     - users_model
+security:
+  - {}
+paths:
+  /auth:
+    get:
+      tags:
+        - Autenticación
+      summary: Tokens de autenticacīón
+      description: Retorna los tokens asociados al usaurio para acceder a los recursos del API
+      operationId: auth
+      parameters:
+        - name: Authorization
+          in: header
+          description: Basic base64-encoded string de username:password
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth'
+        '400':
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AuthNoHeader'
+                  - $ref: '#/components/schemas/AuthRefreshInvalid'
+  /auth/refresh:
+    get:
+      tags:
+        - Autenticación
+      summary: Refrescar Tokens de autenticacīón
+      description: Retorna los nuevos tokens asociados al usaurio para acceder a los recursos del API
+      operationId: authRefresh
+      parameters:
+        - name: Authorization
+          in: header
+          description: Basic base64-encoded string del refreshToken
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auth'
+        '400':
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AuthNoHeader'
+                  - $ref: '#/components/schemas/AuthInvalid'
+  /creditapplications:
+    get:
+      tags:
+        - Solicitudes de Crédito
+      summary: Listar solicitudes de crédito
+      description: Retorna la lista de solicitudes de crédito asociados al comercio.
+      operationId: getCreditApplications
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credit_Application'
+        '401':
+          description: Sin autenticación
+        '403':
+          description: Sin autorización
+        '500':
+          description: Error de Servidor
+      security:
+        - api_key:
+            - 'leer: solicitudes de crédito'
+  '/creditapplications/{id}':
+    get:
+      tags:
+        - Solicitudes de Crédito
+      summary: Buscar solicitud de crédito por Id
+      description: 'Retorna la solicitud de crédito por el Id suministrado.'
+      operationId: getCreditApplicationById
+      parameters:
+        - name: Autorización
+          in: header
+          description: Token de autorización
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id de la solicitud de crédito
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Id suministrado inválido
+        '401':
+          description: No authenticado
+        '403':
+          description: No autorizado
+        '404':
+          description: Usuario no encontrado
+      security:
+        - api_key:
+            - 'leer: solicitudes de crédito'
+  /users:
+    get:
+      tags:
+        - users
+      summary: Listar usuarios
+      description: Retorna la lista de usuarios registrados en el comercio
+      operationId: getPetById
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token de autorización
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credit_Application'
+        '401':
+          description: No autenticado
+        '403':
+          description: No autorizado
+        '500':
+          description: Error del Servidor
+      security:
+        - api_key:
+            - 'leer: solicitudes de crédito'
+    post:
+      tags:
+        - Usuarios
+      summary: Crear usuario
+      description: Crea un usuario en el sistema asociado a un comercio
+      operationId: createUser
+      responses:
+        '200':
+          description: Operación exitosa
+        '401':
+          description: No autenticado
+        '403':
+          description: No autorizado
+        '500':
+          description: Error del Servidor
+        default:
+          description: successful operation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credit_Application'
+        description: Created user object
+        required: true
+      security:
+        - api_key:
+            - 'escribir: usuarios'
+
+  '/users/{id}':
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener usuario por Id
+      description: 'Retorna el usuario asociado al Id especificado'
+      operationId: getUserByName
+      parameters:
+        - name: id
+          in: path
+          description: 'The name that needs to be fetched. Use user1 for testing. '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Id suministrado inválido
+        '401':
+          description: No authenticado
+        '403':
+          description: No autorizado
+        '404':
+          description: Usuario no encontrado
+      security:
+        - api_key:
+            - 'leer: solicitud de crédito'
+    put:
+      tags:
+        - Usuarios
+      summary: Actualizar usuario
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: name that need to be updated
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User is updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid user supplied
+        '404':
+          description: User not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: Updated user object
+        required: true
+    delete:
+      tags:
+        - Usuarios
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User is deleted
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+  /user/login:
+    get:
+      tags:
+        - Usuarios
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                response:
+                  value: OK
+            application/xml:
+              schema:
+                type: string
+              examples:
+                response:
+                  value: <Message> OK </Message>
+            text/plain:
+              examples:
+                response:
+                  value: OK
+        '400':
+          description: Invalid username/password supplied
+  /user/logout:
+    get:
+      tags:
+        - Usuarios
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      responses:
+        default:
+          description: successful operation
+  /qr:
+    post:
+      tags:
+        - Desembolsos
+      summary: Consumir código QR
+      description: 'Este recurso valida que el código QR sea válido aspectos como la fecha de expiración del código QR y perteneciente al comercio.'
+      operationId: scanQr
+      requestBody:
+        $ref: '#/components/requestBodies/qr'
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/qrResponse'
+        '401':
+          description: Sin autenticación
+        '403':
+          description: Sin autorización
+        '500':
+          description: Error de Servidor
+      security:
+        - api_key:
+            - 'leer: desembolso'
+            - 'escribir: desembolso'
+  /invoice:
+    post:
+      tags:
+        - Desembolsos
+      summary: Enviar factura
+      description: 'Este recurso acepta una factura por parte del comercio'
+      operationId: invoice
+      requestBody:
+        $ref: '#/components/requestBodies/invoice'
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '401':
+          description: Sin autenticación
+        '403':
+          description: Sin autorización
+        '500':
+          description: Error de Servidor
+      security:
+        - api_key:
+            - 'leer: desembolso'
+            - 'escribir: desembolso'
+components:
+  schemas:
+    qrResponse:
+      type: object
+      properties:
+        code:
+          description: Código QR / Pin
+          type: string
+        status:
+          enum:
+            - OK
+            - EXPIRED
+            - CANCELLED
+            - CREDIT_NOT_FOUND
+            - INSUFICIENT_CREDIT
+    InvoiceResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    Id:
+      type: string
+      readOnly: true
+    Auth:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        idToken:
+          type: string
+        refreshtToken:
+          type: string
+    AuthNoHeader:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: 'No Auth info provided'
+    AuthInvalid:
+      type: object
+      description: Header inválido
+      properties:
+        error:
+          type: string
+          example: 'Incorrect username or password.'
+    AuthRefreshInvalid:
+      type: object
+      description: Header inválido
+      properties:
+        error:
+          type: string
+          example: 'Invalid refresh token'
+    Credit_Application:
+      type: object
+      discriminator:
+        propertyName: creditApplicationType
+      properties:
+        id:
+          description: Credit_Application ID
+          $ref: '#/components/schemas/Id'
+        userId:
+          description: Documento de identificación del cliente
+          type: string
+          example:
+        status:
+          type: string
+          description: Credit_Application status in the store
+          enum:
+            - APPROVADO
+            - PENDIENTE
+            - RECHAZADO
+    Qr:
+      type: object
+      required:
+        - codeQR
+        - amount
+      properties:
+        codeQR:
+          type: string
+          description: Código QR
+          example: '123456'
+        amount:
+          description: Monto a consumir en el POS
+          type: number
+          example: 1000
+    Invoice:
+      type: object
+      required:
+        - commerceId
+        - amount
+        - orderId
+        - file
+      properties:
+        commerceId:
+          type: string
+          description: Código QR
+          example: 123456
+        amount:
+          description: Monto total de la factura
+          type: number
+          example: 1000
+        orderId:
+          description: Id unico de la orden por parte del comercio
+          type: string
+          example: 'transactionId-0123456789'
+        file:
+          description: Archivo de factura
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        email:
+          description: Correo electrónico del usuario
+          type: string
+          format: email
+          example: dev@crediviva.com.pa
+        given_name:
+          description: Nombres del usuario
+          type: string
+          example: Dev
+        familly_name:
+          description: Apellidos del usuario
+          type: string
+          example: Crediviva
+        status:
+          description: Estado del usuario
+          type: string
+          enum:
+            - ACTIVO
+            - INACTIVO
+  requestBodies:
+    qr:
+      content:
+        application/json:
+          schema:
+            description: QR
+            title: 'Request Body'
+            $ref: '#/components/schemas/Qr'
+    invoice:
+      content:
+        application/json:
+          schema:
+            typedescription: Solicitud de Crédito
+            title: 'title rb disb'
+            $ref: '#/components/schemas/Invoice'
+  securitySchemes:
+    api_key:
+      description: >
+        Para este ejemplo, puedes utilizar el `special-Key` el cual te concede de la autenticación necesaria para consumir los recursos expuestos para las operaciones descritas en el API.
+      type: apiKey
+      name: Authorization
+      in: header

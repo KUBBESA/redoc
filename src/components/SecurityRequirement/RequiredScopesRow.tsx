@@ -5,7 +5,7 @@ export const RequiredScopesRow = ({ scopes }: { scopes: string[] }): JSX.Element
 
   return (
     <div>
-      <b>Required scopes: </b>
+      <b>Scopes requeridos: </b>
       {scopes.map((scope, idx) => {
         return (
           <React.Fragment key={idx}>

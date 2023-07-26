@@ -17,7 +17,7 @@ export function SecurityDetails(props: SecuritySchemaProps) {
       {scheme.apiKey ? (
         <>
           <SecurityRow>
-            <b>{titleize(scheme.apiKey.in || '')} parameter name: </b>
+            <b>{titleize(scheme.apiKey.in || '')} parametro: </b>
             <code>{scheme.apiKey.name}</code>
           </SecurityRow>
           {RequiredScopes}

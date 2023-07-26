@@ -80,8 +80,8 @@ function DropdownWithinHeader({
   return (
     <UnderlinedHeader key="header">
       Request Body schema: <DropdownOrLabel {...props} />
-      {isRequired && <RequiredBody>required</RequiredBody>}
-      {isOptional && <OptionalBody>optional</OptionalBody>}
+      {isRequired && <RequiredBody>requerido</RequiredBody>}
+      {isOptional && <OptionalBody>opcional</OptionalBody>}
     </UnderlinedHeader>
   );
 }

@@ -30,7 +30,7 @@ export class SecurityDefs extends React.PureComponent<SecurityDefsProps> {
             <Markdown source={scheme.description || ''} />
             <SecurityDetailsStyle>
               <SecurityRow>
-                <b>Security Scheme Type: </b>
+                <b>Tipo de Esquema de Segurida: </b>
                 <span>{AUTH_TYPES[scheme.type] || scheme.type}</span>
               </SecurityRow>
               <SecurityDetails scheme={scheme} />

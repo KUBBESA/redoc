@@ -83,7 +83,7 @@ export class ApiInfo extends React.Component<ApiInfoProps> {
             <ApiHeader>
               {info.title} {version}
             </ApiHeader>
-            {!hideDownloadButton && (
+            {false && !hideDownloadButton && (
               <p>
                 {l('downloadSpecification')}:
                 <DownloadButton
