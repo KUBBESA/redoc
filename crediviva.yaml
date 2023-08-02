@@ -373,7 +373,7 @@ paths:
       tags:
         - Usuarios
       summary: Logs user into the system
-      description: ""
+      description: "Finaliza la sesión usuario"
       operationId: loginUser
       parameters:
         - name: username
@@ -457,6 +457,39 @@ paths:
         - api_key:
             - "leer: desembolso"
             - "escribir: desembolso"
+  /qr/status:
+    get:
+      tags:
+        - Desembolsos
+      summary: Status Código QR
+      description: "Este recurso devuelve el status de un código QR."
+      operationId: QrStatus
+      parameters:
+        - name: dataQR
+          in: query
+          description: Código QR consumido
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/qrStatusResponse"
+        "400":
+          description: Código QR no suministrado
+        "401":
+          description: Sin autenticación
+        "403":
+          description: Sin autorización
+        "500":
+          description: Error de Servidor
+      security:
+        - api_key:
+            - "leer: desembolso"
+            - "escribir: desembolso"
   /invoice:
     post:
       tags:
@@ -491,6 +524,7 @@ components:
         dataQR:
           description: Código QR / Pin
           type: number
+          example: 123456
         status:
           enum:
             - OK
@@ -498,6 +532,19 @@ components:
             - CANCELLED
             - CREDIT_NOT_FOUND
             - INSUFICIENT_CREDIT
+    qrStatusResponse:
+      type: object
+      properties:
+        dataQR:
+          description: Código QR / Pin
+          type: number
+          example: 123456
+        status:
+          enum:
+            - ACTIVE
+            - PENDING
+            - EXPIRED
+            - CANCELLED
     InvoiceResponse:
       type: object
       properties:
@@ -511,12 +558,12 @@ components:
     Auth:
       type: object
       properties:
-        accessToken:
-          type: string
         idToken:
           type: string
+          description: Token Bearer de autenticación para utilizar en los endpoints que requieran de autenticación. Expira cada hora
         refreshtToken:
           type: string
+          description: Utilizado en el endpoint /auth/refresh para obtener un idToken renovado
     AuthNoHeader:
       type: object
       description: Sin Header
