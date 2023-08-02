@@ -1,9 +1,9 @@
 module.exports = {
   apps: [
     {
-      name: 'apidoc',
-      script: 'npm',
-      args: 'start:prod',
+      name: 'Crediviva API Docs',
+      script: 'http-server',
+      args: '-p 8888',
       instances: 'max',
       autorestart: true,
       watch: false,
