@@ -12,7 +12,7 @@ info:
   description: |
     # Introducción
     Este API esta docoumentado en formato **OpenAPI** desarrollado por el equipo de desarrollo de [Crediviva](https://crediviva.com.pa).
-    Para esta documentació, puedes utilizar el api key `special-key` para probar los filtros de autorización.
+    Para esta documentación, puedes utilizar el api key `special-key` para probar los filtros de autorización.
 
     # Información de Autenticación 
 
@@ -488,9 +488,9 @@ components:
     qrResponse:
       type: object
       properties:
-        code:
+        dataQR:
           description: Código QR / Pin
-          type: string
+          type: number
         status:
           enum:
             - OK
@@ -501,8 +501,8 @@ components:
     InvoiceResponse:
       type: object
       properties:
-        code:
-          type: string
+        dataQR:
+          type: number
         message:
           type: string
     Id:
@@ -560,11 +560,11 @@ components:
     Qr:
       type: object
       required:
-        - codeQR
+        - dataQR
         - amount
       properties:
-        codeQR:
-          type: string
+        dataQR:
+          type: number
           description: Código QR
           example: "123456"
         amount:
@@ -574,14 +574,14 @@ components:
     Invoice:
       type: object
       required:
-        - commerceId
+        - dataQR
         - amount
         - orderId
         - file
       properties:
-        commerceId:
-          type: string
-          description: Código QR
+        dataQR:
+          type: number
+          description: Código QR consumido
           example: 123456
         amount:
           description: Monto total de la factura
