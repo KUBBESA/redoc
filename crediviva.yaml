@@ -538,6 +538,9 @@ components:
             - INSUFICIENT_CREDIT
             - INVALID_AMOUNT
             - INVALID_QR
+        message:
+          type: string
+          example: "Message example"
     qrStatusResponse:
       type: object
       properties:
