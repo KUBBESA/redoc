@@ -548,6 +548,10 @@ components:
           description: Código QR / Pin
           type: number
           example: 123456
+        transactionId:
+          description: ID único de transacción
+          type: string
+          example: 64cb0b3030b6e6d24b613553
         status:
           enum:
             - ACTIVE
