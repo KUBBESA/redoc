@@ -536,6 +536,7 @@ components:
             - CANCELLED
             - CREDIT_NOT_FOUND
             - INSUFICIENT_CREDIT
+            - INVALID_AMOUNT
             - INVALID_QR
     qrStatusResponse:
       type: object
