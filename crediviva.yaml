@@ -536,6 +536,8 @@ components:
             - CANCELLED
             - CREDIT_NOT_FOUND
             - INSUFICIENT_CREDIT
+            - INVALID_AMOUNT
+            - INVALID_QR
     qrStatusResponse:
       type: object
       properties:
@@ -546,9 +548,10 @@ components:
         status:
           enum:
             - ACTIVE
-            - PENDING
-            - EXPIRED
+            - APPROVED
             - CANCELLED
+            - EXPIRED
+            - PENDING
     InvoiceResponse:
       type: object
       properties:
@@ -685,6 +688,12 @@ components:
             title: "title rb disb"
             $ref: "#/components/schemas/Invoice"
   securitySchemes:
+    Bearer:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: >-
+        Para este ejemplo, puedes utilizar el `special-Key` el cual te concede de la autenticación necesaria para consumir los recursos expuestos para las operaciones descritas en el API.
     api_key:
       description: >
         Para este ejemplo, puedes utilizar el `special-Key` el cual te concede de la autenticación necesaria para consumir los recursos expuestos para las operaciones descritas en el API.
