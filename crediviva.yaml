@@ -49,6 +49,9 @@ tags:
   - name: Usuarios
     x-displayName: Usuarios
     description: Operaciones sobre usuarios
+  - name: API CAJA
+    x-displayName: Api Caja
+    description: Operaciones en caja comercio
   - name: Desembolsos
     x-displayName: Desembolsos
     description: Operaciones sobre desembolsos
@@ -76,6 +79,7 @@ tags:
     x-displayName: Usuario
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Credit_Application" />
+  
 x-tagGroups:
   - name: Autenticación
     tags:
@@ -86,6 +90,9 @@ x-tagGroups:
       # - Créditos
       # - Clientes
       - Desembolsos
+  - name: API CAJA
+    tags:
+      - API CAJA
   # - name: Manejo de Usuarios
   #   tags:
   #     - Departamentos
@@ -102,6 +109,130 @@ x-tagGroups:
 security:
   - {}
 paths:
+  /api-caja/get-balance:
+    post:
+      tags:
+        - API CAJA
+      summary: Obtener saldo del cliente
+      description: Obtiene el saldo asociado al cliente
+      operationId: get-balance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Get_Balance"
+      security:
+        - api_key:
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBalance"
+        "400":
+          description: No se ha proporcionado el número de cédula en la solicitud
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBalanceNoIdNumber"
+        "403":
+          description: Sin permisos para acceder al recurso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBalanceForbidden"
+        "406":
+          description: Error al conectarse a base de datos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBalanceErrorConnectingDb"
+        "404":
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/GetBalanceUserNotFound"
+                  - $ref: "#/components/schemas/GetBalanceCreditNotFound"
+                  - $ref: "#/components/schemas/GetBalanceInstallmentsNotFound"
+  /api-caja/get-payment-methods:
+    get:
+      tags:
+        - API CAJA
+      summary: Obtener métodos de pago disponibles
+      description: Obtiene la lista de métodos de pago disponibles
+      operationId: get-payment-methods
+      security:
+        - api_key:
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPaymentMethods"
+        "406":
+          description: Error al obtener los metodos de pago
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPaymentMethodsError"   
+  /api-caja/make-payment:
+    post:
+      tags:
+        - API CAJA
+      summary: Realizar un pago
+      description: Procesa un pago asociado al cliente
+      operationId: make-payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Make_Payment"
+      security:
+        - api_key:
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MakePayment"
+      
+        "400":
+          description: No se ha proporcionado los parametros correspondientes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MakePaymentNoParameters"
+        "403":
+          description: Sin permisos para acceder al recurso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MakePaymentForbidden"
+        "404":
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/MakePaymentUserNotFound"
+                  - $ref: "#/components/schemas/MakePaymentCreditNotFound"
+        "406":
+          description: Error al procesar la solicitud
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/MakePaymentErroGettingReceipt"
+                  - $ref: "#/components/schemas/MakePaymentErroSendingEmail"
+                  - $ref: "#/components/schemas/MakePaymentErroMakingPayment"
+                  - $ref: "#/components/schemas/MakePaymentErroGettingTransaction"
+                  - $ref: "#/components/schemas/MakePaymentErroConnectingDb"
+        
   /auth:
     get:
       tags:
@@ -582,6 +713,204 @@ components:
         refreshtToken:
           type: string
           description: Utilizado en el endpoint /auth/refresh para obtener un idToken renovado
+    GetBalance:
+      type: object
+      properties:
+        loanId:
+          type: number
+          description: Identificador único del crédito
+        installmentNumber:
+          type: number
+          description: Plazo correspondiente a la cuota
+        monthlyInstallment:
+          type: number
+          description: Monto inicial de la cuota
+        amountPaid:
+          type: number
+          description: Monto pagado hasta el momento de la cuota
+        remainingAmount:
+          type: number
+          description: Deuda pendiente de la cuota
+        totalDebt:
+          type: number
+          description: Deuda total acumulada
+        dueDate:
+          type: string
+          description: Fecha en la que la cuota vence
+    GetBalanceNoIdNumber:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "idNumber is missing"
+    GetBalanceForbidden:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Forbidden"
+    GetBalanceErrorConnectingDb:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Error when connecting db"
+    GetBalanceUserNotFound:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "User not found"
+    GetBalanceCreditNotFound:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Credit not found"
+    GetBalanceInstallmentsNotFound:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Installments not found"
+    GetPaymentMethods:
+      description: Sin Header
+      properties:
+        paymentMethods:
+          type: array
+          description: lista de métodos de pago
+    GetPaymentMethodsError:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Error getting payment methods"
+    MakePayment:
+      type: object
+      description: Sin Header
+      properties:
+        payment_date:
+          type: string
+          example: "12/28/2023, 9:47:58 a. m."
+          description: "Fecha y hora del pago."
+        collection_office:
+          type: string
+          example: "FURNITURE CITY"
+          description: "Oficina de cobro asociada al pago."
+        customer_name:
+          type: string
+          example: "George Louis Bettsack Lustgarten"
+          description: "Nombre completo del cliente."
+        id_number:
+          type: string
+          example: "8-859-1700"
+          description: "Número de identificación del cliente."
+        credit_number:
+          type: number
+          example: 200231
+          description: "Número de crédito asociado al pago."
+        transaction_number:
+          type: string
+          example: "60b7509715a8"
+          description: "Número de transacción del pago."
+        payment_method:
+          type: string
+          example: "YAPPY/TARJETA DE CRÉDITO/EFECTIVO"
+          description: "Método de pago utilizado."
+        cashier_id:
+          type: string
+          example: "8aa9dc91-f09a-48a2-84fb-3178de610a68"
+          description: "Identificación del cajero que procesó el pago."
+        total_payment:
+          type: string
+          example: "$0.10"
+          description: "Monto total del pago realizado."
+        total_obligation_at_start:
+          type: number
+          example: 300
+          description: Obligación total al inicio del proceso de pago.
+        total_obligation_before_payment:
+          type: number
+          example: 219
+          description: "Obligación total antes del pago."
+        total_obligation_after_payment:
+          type: number
+          example: 218.9
+          description: "Obligación total después del pago."
+        total_obligation_if_pre_cancelled:
+          type: number
+          example: 218.9
+          description: "Obligación total si se cancela antes del pago."
+    MakePaymentNoParameters:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Missing parameters: parameters"
+    MakePaymentForbidden:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Forbidden"
+    MakePaymentUserNotFound:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "User not found"
+    MakePaymentCreditNotFound:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Credit not found"
+    MakePaymentErroGettingReceipt:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Error getting receipt"
+    MakePaymentErroSendingEmail:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Error sending email"
+    MakePaymentErroMakingPayment:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Error making payment"
+    MakePaymentErroGettingTransaction:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Error getting transaction"
+    MakePaymentErroConnectingDb:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Error when connecting db"
     AuthNoHeader:
       type: object
       description: Sin Header
@@ -603,6 +932,33 @@ components:
         error:
           type: string
           example: "Invalid refresh token"
+    Get_Balance:
+      type: object
+      required:
+        - idNumber
+      properties:
+        idNumber:
+          type: string
+          description: "formato X-XXX-XXXX"
+    Get_Payment_Methods:
+       type: object
+    Make_Payment:
+       type: object
+       required:
+         - creditId
+         - transactionAmount
+         - paymentTypeId
+         - paymentMethod
+       properties:
+        creditId:
+          type: number
+        transactionAmount:
+          type: number
+        paymentTypeId:
+          type: number
+        paymentMethod:
+          type: array
+          description: 'Example: ["YAPPY","TARJETA DE CRÉDITO","EFECTIVO"]'
     Credit_Application:
       type: object
       discriminator:
