@@ -797,8 +797,8 @@ components:
       description: Sin Header
       properties:
         paymentMethods:
-          type: array
-          description: lista de métodos de pago
+          type: string
+          description: método de pago
     GetPaymentMethodsError:
       type: object
       description: Sin Header
@@ -836,7 +836,7 @@ components:
           description: "Número de transacción del pago."
         payment_method:
           type: string
-          example: "YAPPY/TARJETA DE CRÉDITO/EFECTIVO"
+          example: "YAPPY"
           description: "Método de pago utilizado."
         cashier_id:
           type: string
@@ -978,8 +978,7 @@ components:
         paymentTypeId:
           type: number
         paymentMethod:
-          type: array
-          description: 'Example: ["YAPPY","TARJETA DE CRÉDITO","EFECTIVO"]'
+          type: string
     Credit_Application:
       type: object
       discriminator:
