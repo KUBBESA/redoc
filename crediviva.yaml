@@ -128,8 +128,10 @@ paths:
           description: Operación exitosa
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/GetBalance"
+             schema:
+                oneOf:
+                  - $ref: "#/components/schemas/GetBalance"
+                  - $ref: "#/components/schemas/GetBalanceAlreadyPaid"
         "400":
           description: No se ha proporcionado el número de cédula en la solicitud
           content:
@@ -142,7 +144,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetBalanceForbidden"
-        "406":
+        "500":
           description: Error al conectarse a base de datos
           content:
             application/json:
@@ -173,7 +175,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetPaymentMethods"
-        "406":
+        "500":
           description: Error al obtener los metodos de pago
           content:
             application/json:
@@ -221,18 +223,24 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/MakePaymentUserNotFound"
                   - $ref: "#/components/schemas/MakePaymentCreditNotFound"
-        "406":
+        "500":
+          description: Error al realizar la solicitud
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/MakePaymentErroConnectingDb"
+                  - $ref: "#/components/schemas/MakePaymentErroGettingReceipt"
+                  - $ref: "#/components/schemas/MakePaymentErroSendingEmail"
+                  - $ref: "#/components/schemas/MakePaymentErroMakingPayment"
+                  - $ref: "#/components/schemas/MakePaymentErroGettingTransaction"
+        "422":
           description: Error al procesar la solicitud
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/MakePaymentErroGettingReceipt"
-                  - $ref: "#/components/schemas/MakePaymentErroSendingEmail"
-                  - $ref: "#/components/schemas/MakePaymentErroMakingPayment"
-                  - $ref: "#/components/schemas/MakePaymentErroGettingTransaction"
-                  - $ref: "#/components/schemas/MakePaymentErroConnectingDb"
-        
+                  - $ref: "#/components/schemas/MakePaymentErroTransactionAmount"
   /auth:
     get:
       tags:
@@ -737,13 +745,19 @@ components:
         dueDate:
           type: string
           description: Fecha en la que la cuota vence
+    GetBalanceAlreadyPaid:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Credit fully paid"
     GetBalanceNoIdNumber:
       type: object
       description: Sin Header
       properties:
         message:
           type: string
-          example: "idNumber is missing"
+          example: "IdNumber is missing"
     GetBalanceForbidden:
       type: object
       description: Sin Header
@@ -911,6 +925,13 @@ components:
         message:
           type: string
           example: "Error when connecting db"
+    MakePaymentErroTransactionAmount:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Transaction amount must be greater than zero"
     AuthNoHeader:
       type: object
       description: Sin Header
