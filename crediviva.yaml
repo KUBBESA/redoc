@@ -1089,9 +1089,14 @@ components:
        type: object
        required:
          - amount
+         - lineas
        properties:
         amount:
           type: number
+        lineas:
+          type: array
+          items:
+            type: string
     Credit_Application:
       type: object
       discriminator:
