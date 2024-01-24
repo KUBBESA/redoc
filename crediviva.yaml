@@ -872,15 +872,15 @@ components:
           description: "Fecha y hora del pago."
         collection_office:
           type: string
-          example: "FURNITURE CITY"
+          example: "PANAMA STORE"
           description: "Oficina de cobro asociada al pago."
         customer_name:
           type: string
-          example: "George Louis Bettsack Lustgarten"
+          example: "Pepito Flores"
           description: "Nombre completo del cliente."
         id_number:
           type: string
-          example: "8-859-1700"
+          example: "9-229-1200"
           description: "Número de identificación del cliente."
         credit_number:
           type: number
@@ -888,15 +888,15 @@ components:
           description: "Número de crédito asociado al pago."
         transaction_number:
           type: string
-          example: "60b7509715a8"
+          example: "60b7509715a82214"
           description: "Número de transacción del pago."
         payment_method:
           type: string
-          example: "YAPPY"
+          example: "RAP"
           description: "Método de pago utilizado."
         cashier_id:
           type: string
-          example: "8aa9dc91-f09a-48a2-84fb-3178de610a68"
+          example: "8aa9dc91-f09a-48a4-844b-3178d3610a28"
           description: "Identificación del cajero que procesó el pago."
         total_payment:
           type: string
