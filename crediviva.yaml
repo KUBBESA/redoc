@@ -390,7 +390,7 @@ paths:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/CancelQrErrorConnectingDb"
-                  - $ref: "#/components/schemas/CancelQrErrorCancelling"
+                  - $ref: "#/components/schemas/CancelQrErrorCancellingQR"
   /auth:
     get:
       tags:
