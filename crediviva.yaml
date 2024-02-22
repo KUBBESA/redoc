@@ -1,8 +1,8 @@
 openapi: 3.0.1
 servers:
-  - url: https://api.kubbesa.net/demo
-    description: Servidor Demo
-    x-displayName: Demo
+  - url: https://api.kubbesa.net/staging
+    description: Servidor staging
+    x-displayName: staging
   # - url: https://api.kubbesa.net/dev
   #   description: Servidor Dev
   # - url: https://api.kubbesa.net/staging
@@ -244,7 +244,7 @@ paths:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/MakePaymentErroTransactionAmount"
-  /api-pull/create-qr-code:
+  /pull/create-qr:
      post:
       tags:
         - API PULL
@@ -297,7 +297,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateQrCodeErrorTransactionAmount"
-  /api-pull/get-info-qr:
+  /pull/get-info-qr:
      post:
       tags:
         - API PULL
@@ -344,7 +344,7 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/GetInfoQrErrorConnectingDb"
                   - $ref: "#/components/schemas/GetInfoQrErrorGettingQR"
-  /api-pull/cancel-qr:
+  /pull/cancel-qr:
      post:
       tags:
         - API PULL
