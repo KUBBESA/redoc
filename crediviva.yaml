@@ -1140,10 +1140,22 @@ components:
           type: number
           example: 503212
           description: Código generado
+        transactionId:
+          description: ID único de transacción
+          type: string
+          example: 64cb0b3030b6e6d24b613553
         disbursementStatus:
           type: object
           properties:
             currentStatus:
+              enum:
+                - PENDING
+                - IN_PROGRESS
+                - VALIDATING_IDENTITY
+                - PENDING_SIGNATURE
+                - SIGNATURE_COMPLETED
+                - REJECTED
+                - CANCELLED
               type: string
               example: "IN_PROGRESS"
               description: Estado actual del QR y desembolso
