@@ -96,6 +96,9 @@ x-tagGroups:
   - name: API PULL
     tags:
       - API PULL
+  - name: RED DIGITAL
+    tags:
+      - RED DIGITAL
   # - name: Manejo de Usuarios
   #   tags:
   #     - Departamentos
@@ -266,11 +269,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateQrCode"
         "400":
-          description: No se ha proporcionado los parametros correspondientes
+          description:  La solicitud no puede ser procesada debido a uno o más errores en los parámetros enviados. 
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CreateQrCodeNoParameters"
+               oneOf:
+                - $ref: "#/components/schemas/CreateQrCodeNoParameters"
+                - $ref: "#/components/schemas/CreateQrCodeWrongType"
         "403":
           description: Sin permisos para acceder al recurso
           content:
@@ -391,6 +396,59 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/CancelQrErrorConnectingDb"
                   - $ref: "#/components/schemas/CancelQrErrorCancellingQR"
+  /red-digital/create-qr:
+     post:
+      tags:
+        - RED DIGITAL
+      summary: Generar código QR
+      description: Genera el código qr que será escaneado por el cliente
+      operationId: create-qr-code
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Create_Qr_Code_Red_Digital"
+      security:
+        - api_key:
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateQrCodeRedDigital"
+        "400":
+          description: No se ha proporcionado los parametros correspondientes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateQrCodeNoParametersRedDigital"
+        "403":
+          description: Sin permisos para acceder al recurso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateQrCodeForbiddenRedDigital"
+        "404":
+          description: Recurso no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateQrCodeCommerceNotFoundRedDigital"
+        "500":
+          description: Error al realizar la solicitud
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/CreateQrCodeErrorConnectingDbRedDigital"
+                  - $ref: "#/components/schemas/CreateQrCodeErrorCreatingQRRedDigital"
+        "422":
+          description: Error al procesar la solicitud
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateQrCodeErrorTransactionAmountRedDigital"
   /auth:
     get:
       tags:
@@ -1097,6 +1155,13 @@ components:
         message:
           type: string
           example: "Missing parameters: amount"
+    CreateQrCodeWrongType:
+      type: object
+      description: Sin Header
+      properties:
+        message: 
+          type: string
+          example: "Amount must be a number"
     CreateQrCodeForbidden:
       type: object
       description: Sin Header
@@ -1126,6 +1191,56 @@ components:
           type: string
           example: "Error creating QR"
     CreateQrCodeErrorTransactionAmount:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Transaction amount must be greater than zero"
+    CreateQrCodeRedDigital:
+      type: object
+      description: Sin Header
+      properties:
+        dataQR:
+          type: number
+          example: "503212"
+          description: "Código generado para ser escaneado en el qr"
+    CreateQrCodeNoParametersRedDigital:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Missing parameters: amount"
+    CreateQrCodeForbiddenRedDigital:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Forbidden"
+    CreateQrCodeCommerceNotFoundRedDigital:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Commerce not found"
+    CreateQrCodeErrorConnectingDbRedDigital:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Error when connecting db"
+    CreateQrCodeErrorCreatingQRRedDigital:
+      type: object
+      description: Sin Header
+      properties:
+        message:
+          type: string
+          example: "Error creating QR"
+    CreateQrCodeErrorTransactionAmountRedDigital:
       type: object
       description: Sin Header
       properties:
@@ -1329,7 +1444,7 @@ components:
        required:
          - amount
          - lineas
-         - email
+         - metaData
        properties:
         amount:
           type: number
@@ -1340,18 +1455,40 @@ components:
             type: string
           description: "Descripción del producto comprado"
           example: ["CELULARES", "COMPUTADORAS", "LINEA BLANCA", "ELECTRODOMÉSTICOS", "INDUMENTARIA", "CALZADO" ]
-        email:
+        metaData:
+          type: object
+          example: '{"name":"John","lastName":"Doe","email":"john-doe@gmail.com"}'
+          description: "Información adicional útil para identificar al usuario que efectúa la transacción. No se limita a los ejemplos proporcionados."
+    Create_Qr_Code_Red_Digital:
+       type: object
+       required:
+         - amount
+         - lineas
+         - metaData
+         - commerceId
+         - deviceId
+       properties:
+        amount:
+          type: number
+          description: "Monto de la compra"
+        lineas:
+          type: array
+          items:
+            type: string
+          description: "Descripción del producto comprado"
+          example: ["CELULARES", "COMPUTADORAS", "LINEA BLANCA", "ELECTRODOMÉSTICOS", "INDUMENTARIA", "CALZADO" ]
+        commerceId:
           type: string
-          example: "john-doe@gmail.com"
-          description: "El email del cajero que esta generando el QR"
-        name:
+          example: "123456"
+          description: "Código del comercio mapeado en el pos"
+        deviceId:
           type: string
-          example: "John"
-          description: "El nombre del cajero que esta generando el QR"
-        lastname:
-          type: string
-          example: "Doe"
-          description: "El apellido del cajero que esta generando el QR"
+          example: "2fa24asz212"
+          description: "Identificador del pos"
+        metaData:
+          type: object
+          example: '{"name":"John","lastName":"Doe","email":"john-doe@gmail.com"}'
+          description: "Información adicional útil para identificar al usuario que efectúa la transacción. No se limita a los ejemplos proporcionados."
     Get_Info_Qr:
        type: object
        required:
