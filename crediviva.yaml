@@ -1300,6 +1300,10 @@ components:
                   type: number
                   example: 500
                   description: Monto restante
+        additionalInfo:
+          type: string
+          example: "Comercio con crédito parcial inhabilitado"
+          description: Información adicional del desembolso
         createdAt:
           type: string
           example: "2024-02-14T12:00:00Z"
