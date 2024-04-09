@@ -1461,7 +1461,7 @@ components:
           example: ["CELULARES", "COMPUTADORAS", "LINEA BLANCA", "ELECTRODOMÉSTICOS", "INDUMENTARIA", "CALZADO" ]
         metaData:
           type: object
-          example: '{"name":"John","lastName":"Doe","email":"john-doe@gmail.com"}'
+          example: {name: "John",lastName: "Doe", email: "john-doe@gmail.com"}
           description: "Información adicional útil para identificar al usuario que efectúa la transacción. No se limita a los ejemplos proporcionados."
     Create_Qr_Code_Red_Digital:
        type: object
