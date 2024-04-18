@@ -1,3 +1,6 @@
 {
-  "yaml.schemaStore.enable": false
+  "yaml.schemaStore.enable": false,
+  "yaml.schemas": {
+    "openapi:v3": "file:///Users/rodolfojaramillo/dev/kubbesa/kubbesa-apidoc/crediviva.yaml"
+  }
 }

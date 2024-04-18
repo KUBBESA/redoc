@@ -79,7 +79,7 @@ tags:
     x-displayName: Usuario
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Credit_Application" />
-  
+
 x-tagGroups:
   - name: Autenticación
     tags:
@@ -99,19 +99,10 @@ x-tagGroups:
   - name: RED DIGITAL
     tags:
       - RED DIGITAL
-  # - name: Manejo de Usuarios
-  #   tags:
-  #     - Departamentos
-  #     - Roles
-  #     - Usuarios
-  # - name: Modelos
-  #   tags:
-  #     - credit_application_model
-  #     - credit_model
-  #     - client_model
-  #     - department_model
-  #     - role_model
-  #     - users_model
+  - name: Integración e-Commerce
+    tags:
+      - e-Commerce
+
 security:
   - {}
 paths:
@@ -129,12 +120,13 @@ paths:
               $ref: "#/components/schemas/Get_Balance"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
           content:
             application/json:
-             schema:
+              schema:
                 oneOf:
                   - $ref: "#/components/schemas/GetBalance"
                   - $ref: "#/components/schemas/GetBalanceAlreadyPaid"
@@ -174,6 +166,7 @@ paths:
       operationId: get-payment-methods
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -186,7 +179,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetPaymentMethodsError"   
+                $ref: "#/components/schemas/GetPaymentMethodsError"
   /api-caja/make-payment:
     post:
       tags:
@@ -201,6 +194,7 @@ paths:
               $ref: "#/components/schemas/Make_Payment"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -208,7 +202,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MakePayment"
-      
+
         "400":
           description: No se ha proporcionado los parametros correspondientes
           content:
@@ -248,7 +242,7 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/MakePaymentErroTransactionAmount"
   /pull/create-qr:
-     post:
+    post:
       tags:
         - API PULL
       summary: Generar código QR
@@ -261,6 +255,7 @@ paths:
               $ref: "#/components/schemas/Create_Qr_Code"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -269,13 +264,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateQrCode"
         "400":
-          description:  La solicitud no puede ser procesada debido a uno o más errores en los parámetros enviados. 
+          description: La solicitud no puede ser procesada debido a uno o más errores en los parámetros enviados.
           content:
             application/json:
               schema:
-               oneOf:
-                - $ref: "#/components/schemas/CreateQrCodeNoParameters"
-                - $ref: "#/components/schemas/CreateQrCodeWrongType"
+                oneOf:
+                  - $ref: "#/components/schemas/CreateQrCodeNoParameters"
+                  - $ref: "#/components/schemas/CreateQrCodeWrongType"
         "403":
           description: Sin permisos para acceder al recurso
           content:
@@ -303,7 +298,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateQrCodeErrorTransactionAmount"
   /pull/get-info-qr:
-     post:
+    post:
       tags:
         - API PULL
       summary: Obtener información código QR
@@ -316,6 +311,7 @@ paths:
               $ref: "#/components/schemas/Get_Info_Qr"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -350,7 +346,7 @@ paths:
                   - $ref: "#/components/schemas/GetInfoQrErrorConnectingDb"
                   - $ref: "#/components/schemas/GetInfoQrErrorGettingQR"
   /pull/cancel-qr:
-     post:
+    post:
       tags:
         - API PULL
       summary: Cancelar código QR
@@ -363,6 +359,7 @@ paths:
               $ref: "#/components/schemas/Cancel_Qr"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -397,7 +394,7 @@ paths:
                   - $ref: "#/components/schemas/CancelQrErrorConnectingDb"
                   - $ref: "#/components/schemas/CancelQrErrorCancellingQR"
   /red-digital/create-qr:
-     post:
+    post:
       tags:
         - RED DIGITAL
       summary: Generar código QR
@@ -410,6 +407,7 @@ paths:
               $ref: "#/components/schemas/Create_Qr_Code_Red_Digital"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -571,213 +569,6 @@ paths:
       security:
         - api_key:
             - "leer: solicitudes de crédito"
-  /users:
-    get:
-      tags:
-        - users
-      summary: Listar usuarios
-      description: Retorna la lista de usuarios registrados en el comercio
-      operationId: getPetById
-      parameters:
-        - name: Authorization
-          in: header
-          description: Token de autorización
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Operación exitosa
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Credit_Application"
-        "401":
-          description: No autenticado
-        "403":
-          description: No autorizado
-        "500":
-          description: Error del Servidor
-      security:
-        - api_key:
-            - "leer: solicitudes de crédito"
-    post:
-      tags:
-        - Usuarios
-      summary: Crear usuario
-      description: Crea un usuario en el sistema asociado a un comercio
-      operationId: createUser
-      responses:
-        "200":
-          description: Operación exitosa
-        "401":
-          description: No autenticado
-        "403":
-          description: No autorizado
-        "500":
-          description: Error del Servidor
-        default:
-          description: successful operation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Credit_Application"
-        description: Created user object
-        required: true
-      security:
-        - api_key:
-            - "escribir: usuarios"
-
-  "/users/{id}":
-    get:
-      tags:
-        - Usuarios
-      summary: Obtener usuario por Id
-      description: "Retorna el usuario asociado al Id especificado"
-      operationId: getUserByName
-      parameters:
-        - name: id
-          in: path
-          description: "The name that needs to be fetched. Use user1 for testing. "
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Id suministrado inválido
-        "401":
-          description: No authenticado
-        "403":
-          description: No autorizado
-        "404":
-          description: Usuario no encontrado
-      security:
-        - api_key:
-            - "leer: solicitud de crédito"
-    put:
-      tags:
-        - Usuarios
-      summary: Actualizar usuario
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-        - name: id
-          in: path
-          description: name that need to be updated
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: User is updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Invalid user supplied
-        "404":
-          description: User not found
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/User"
-        description: Updated user object
-        required: true
-    delete:
-      tags:
-        - Usuarios
-      summary: Delete user
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-        - name: id
-          in: path
-          description: The name that needs to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        "204":
-          description: User is deleted
-        "400":
-          description: Invalid username supplied
-        "404":
-          description: User not found
-  /user/login:
-    get:
-      tags:
-        - Usuarios
-      summary: Logs user into the system
-      description: "Finaliza la sesión usuario"
-      operationId: loginUser
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: successful operation
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-            X-Expires-After:
-              description: date in UTC when token expires
-              schema:
-                type: string
-                format: date-time
-          content:
-            application/json:
-              schema:
-                type: string
-              examples:
-                response:
-                  value: OK
-            application/xml:
-              schema:
-                type: string
-              examples:
-                response:
-                  value: <Message> OK </Message>
-            text/plain:
-              examples:
-                response:
-                  value: OK
-        "400":
-          description: Invalid username/password supplied
-  /user/logout:
-    get:
-      tags:
-        - Usuarios
-      summary: Logs out current logged in user session
-      description: ""
-      operationId: logoutUser
-      responses:
-        default:
-          description: successful operation
   /qr:
     post:
       tags:
@@ -867,6 +658,55 @@ paths:
         - api_key:
             - "leer: desembolso"
             - "escribir: desembolso"
+  /integrations/e-commerce/orders/status:
+    post:
+      tags:
+        - e-Commerce
+      summary: Status de transacción
+      description: "Este recurso retorna el estado de una transacción."
+      operationId: e-commerce-orders-status
+      requestBody:
+        $ref: "#/components/requestBodies/eCommerceOrdersStatus"
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersStatusResponse"
+        "400":
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersStatusResponse400"
+        "401":
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersStatusResponse401"
+        "403":
+          description: Sin autorización
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersStatusResponse403"
+        "404":
+          description: Transacción no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersStatusResponse404"
+        "500":
+          description: Error de Servidor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersStatusResponse500"
+      security:
+        - api_key:
+            - "leer: estado de transacción"
 components:
   schemas:
     qrResponse:
@@ -1159,7 +999,7 @@ components:
       type: object
       description: Sin Header
       properties:
-        message: 
+        message:
           type: string
           example: "Amount must be a number"
     CreateQrCodeForbidden:
@@ -1311,7 +1151,7 @@ components:
         updatedAt:
           type: string
           example: "2024-02-14T12:30:00Z"
-          description: Fecha de actualización del desembolso   
+          description: Fecha de actualización del desembolso
     GetInfoQrNoParameters:
       type: object
       description: Sin Header
@@ -1426,15 +1266,15 @@ components:
           type: string
           description: "formato X-XXX-XXXX"
     Get_Payment_Methods:
-       type: object
+      type: object
     Make_Payment:
-       type: object
-       required:
-         - creditId
-         - transactionAmount
-         - paymentTypeId
-         - paymentMethod
-       properties:
+      type: object
+      required:
+        - creditId
+        - transactionAmount
+        - paymentTypeId
+        - paymentMethod
+      properties:
         creditId:
           type: number
         transactionAmount:
@@ -1444,12 +1284,12 @@ components:
         paymentMethod:
           type: string
     Create_Qr_Code:
-       type: object
-       required:
-         - amount
-         - lineas
-         - metaData
-       properties:
+      type: object
+      required:
+        - amount
+        - lineas
+        - metaData
+      properties:
         amount:
           type: number
           description: "Monto de la compra"
@@ -1458,20 +1298,29 @@ components:
           items:
             type: string
           description: "Descripción del producto comprado"
-          example: ["CELULARES", "COMPUTADORAS", "LINEA BLANCA", "ELECTRODOMÉSTICOS", "INDUMENTARIA", "CALZADO" ]
+          example:
+            [
+              "CELULARES",
+              "COMPUTADORAS",
+              "LINEA BLANCA",
+              "ELECTRODOMÉSTICOS",
+              "INDUMENTARIA",
+              "CALZADO",
+            ]
         metaData:
           type: object
-          example: {name: "John",lastName: "Doe", email: "john-doe@gmail.com"}
+          example:
+            { name: "John", lastName: "Doe", email: "john-doe@gmail.com" }
           description: "Información adicional útil para identificar al usuario que efectúa la transacción. No se limita a los ejemplos proporcionados."
     Create_Qr_Code_Red_Digital:
-       type: object
-       required:
-         - amount
-         - lineas
-         - metaData
-         - commerceId
-         - deviceId
-       properties:
+      type: object
+      required:
+        - amount
+        - lineas
+        - metaData
+        - commerceId
+        - deviceId
+      properties:
         amount:
           type: number
           description: "Monto de la compra"
@@ -1480,7 +1329,15 @@ components:
           items:
             type: string
           description: "Descripción del producto comprado"
-          example: ["CELULARES", "COMPUTADORAS", "LINEA BLANCA", "ELECTRODOMÉSTICOS", "INDUMENTARIA", "CALZADO" ]
+          example:
+            [
+              "CELULARES",
+              "COMPUTADORAS",
+              "LINEA BLANCA",
+              "ELECTRODOMÉSTICOS",
+              "INDUMENTARIA",
+              "CALZADO",
+            ]
         commerceId:
           type: string
           example: "123456"
@@ -1494,18 +1351,18 @@ components:
           example: '{"name":"John","lastName":"Doe","email":"john-doe@gmail.com"}'
           description: "Información adicional útil para identificar al usuario que efectúa la transacción. No se limita a los ejemplos proporcionados."
     Get_Info_Qr:
-       type: object
-       required:
-         - dataQR
-       properties:
+      type: object
+      required:
+        - dataQR
+      properties:
         dataQR:
           type: number
           description: "Código del QR generado"
     Cancel_Qr:
-       type: object
-       required:
-         - dataQR
-       properties:
+      type: object
+      required:
+        - dataQR
+      properties:
         dataQR:
           type: number
           description: "Código del QR generado"
@@ -1589,6 +1446,58 @@ components:
           enum:
             - ACTIVO
             - INACTIVO
+    e-commerce-orders-status:
+      type: object
+      required:
+        - externalOrderId
+      properties:
+        externalOrderId:
+          type: string
+          description: ID único externo de una orden del comercio
+          example: "123456-ABCDE"
+    eCommerceOrdersStatusResponse:
+      type: object
+      properties:
+        externalOrderId:
+          type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - APPROVED
+            - CANCELLED
+            - EXPIRED
+            - PENDING
+    eCommerceOrdersStatusResponse400:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Parámetro externalOrderId no suministrado"
+    eCommerceOrdersStatusResponse401:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "API-Key no suministrado"
+    eCommerceOrdersStatusResponse403:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Acceso denegado"
+    eCommerceOrdersStatusResponse404:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Transacción no encontrada"
+    eCommerceOrdersStatusResponse500:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error de servidor"
   requestBodies:
     qr:
       content:
@@ -1597,6 +1506,13 @@ components:
             description: QR
             title: "Request Body"
             $ref: "#/components/schemas/Qr"
+    eCommerceOrdersStatus:
+      content:
+        application/json:
+          schema:
+            description: e-commerce-orders-status
+            title: "Request Body"
+            $ref: "#/components/schemas/e-commerce-orders-status"
     invoice:
       content:
         application/json:
