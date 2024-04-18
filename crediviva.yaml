@@ -705,8 +705,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/eCommerceOrdersStatusResponse500"
       security:
-        - api_key:
-            - "leer: estado de transacción"
+        - API-Key:
+            - "Lectura: Estado de transacción"
 components:
   schemas:
     qrResponse:
@@ -1453,7 +1453,7 @@ components:
       properties:
         externalOrderId:
           type: string
-          description: ID único externo de una orden del comercio
+          description: ID único externo de la transacción del comercio
           example: "123456-ABCDE"
     eCommerceOrdersStatusResponse:
       type: object
@@ -1532,4 +1532,10 @@ components:
         Para este ejemplo, puedes utilizar el `special-Key` el cual te concede de la autenticación necesaria para consumir los recursos expuestos para las operaciones descritas en el API.
       type: apiKey
       name: Authorization
+      in: header
+    API-Key:
+      description: >
+        API-Key suministrado por Crediviva
+      type: apiKey
+      name: x-api-key
       in: header
