@@ -1,3 +1,4 @@
+# OpenAPI v3.0
 openapi: 3.0.1
 servers:
   - url: https://api.kubbesa.net/staging
@@ -351,7 +352,7 @@ paths:
         - API PULL
       summary: Cancelar código QR
       description: Cancela el código QR generado
-      operationId: cancel-qr
+      operationId: cancel-qr-pull
       requestBody:
         content:
           application/json:
@@ -399,7 +400,7 @@ paths:
         - RED DIGITAL
       summary: Generar código QR
       description: Genera el código qr que será escaneado por el cliente
-      operationId: create-qr-code
+      operationId: red-digital-create-qr-code
       requestBody:
         content:
           application/json:
@@ -599,6 +600,35 @@ paths:
         - api_key:
             - "leer: desembolso"
             - "escribir: desembolso"
+  /qr/cancel:
+    post:
+      operationId: cancel-qr
+      tags:
+        - Desembolsos
+      summary: Cancelar código QR
+      description: "Este recurso cancela un código QR perteneciente al comercio previo a su estado activo."
+      requestBody:
+        $ref: "#/components/requestBodies/qrCancel"
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/qrCancelResponse"
+        "400":
+          description: Código QR no sumunistrado
+        "401":
+          description: Sin autenticación
+        "403":
+          description: Sin autorización
+        "404":
+          description: Código QR no encontrado
+        "500":
+          description: Error de Servidor
+      security:
+        - api_key:
+            - "escritura: cancelar desembolso"
   /qr/status:
     get:
       tags:
@@ -824,6 +854,20 @@ components:
         message:
           type: string
           example: "Message example"
+    qrCancelResponse:
+      type: object
+      properties:
+        dataQR:
+          description: Código QR / Pin
+          type: number
+          example: 123456
+        transactionId:
+          description: ID único de transacción
+          type: string
+          example: 64cb0b3030b6e6d24b613553
+        status:
+          type: string
+          example: "CANCELLED"
     qrStatusResponse:
       type: object
       properties:
@@ -1258,13 +1302,6 @@ components:
         message:
           type: string
           example: "Forbidden"
-    GetInfoQrNotFound:
-      type: object
-      description: Sin Header
-      properties:
-        message:
-          type: string
-          example: "Forbidden"
     GetInfoQrDisbursementNotFound:
       type: object
       description: Sin Header
@@ -1357,8 +1394,8 @@ components:
         idNumber:
           type: string
           description: "formato X-XXX-XXXX"
-    Get_Payment_Methods:
-      type: object
+    # Get_Payment_Methods:
+    #   type: object
     Make_Payment:
       type: object
       required:
@@ -1491,6 +1528,20 @@ components:
           description: Monto a consumir en el POS
           type: number
           example: 1000
+    QrCancel:
+      type: object
+      required:
+        - dataQR
+        - transactionId
+      properties:
+        dataQR:
+          type: number
+          description: Código QR
+          example: 123456
+        transactionId:
+          type: string
+          description: ID único de transacción
+
     Invoice:
       type: object
       required:
@@ -1691,6 +1742,13 @@ components:
             description: QR
             title: "Request Body"
             $ref: "#/components/schemas/Qr"
+    qrCancel:
+      content:
+        application/json:
+          schema:
+            description: QR-cancel
+            title: "Request Body"
+            $ref: "#/components/schemas/QrCancel"
     eCommerceOrdersCreateOrder:
       content:
         application/json:
