@@ -1,3 +1,4 @@
+# OpenAPI v3.0
 openapi: 3.0.1
 servers:
   - url: https://api.kubbesa.net/staging
@@ -79,7 +80,7 @@ tags:
     x-displayName: Usuario
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Credit_Application" />
-  
+
 x-tagGroups:
   - name: Autenticación
     tags:
@@ -99,19 +100,10 @@ x-tagGroups:
   - name: RED DIGITAL
     tags:
       - RED DIGITAL
-  # - name: Manejo de Usuarios
-  #   tags:
-  #     - Departamentos
-  #     - Roles
-  #     - Usuarios
-  # - name: Modelos
-  #   tags:
-  #     - credit_application_model
-  #     - credit_model
-  #     - client_model
-  #     - department_model
-  #     - role_model
-  #     - users_model
+  - name: Integración e-Commerce
+    tags:
+      - e-Commerce
+
 security:
   - {}
 paths:
@@ -129,12 +121,13 @@ paths:
               $ref: "#/components/schemas/Get_Balance"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
           content:
             application/json:
-             schema:
+              schema:
                 oneOf:
                   - $ref: "#/components/schemas/GetBalance"
                   - $ref: "#/components/schemas/GetBalanceAlreadyPaid"
@@ -174,6 +167,7 @@ paths:
       operationId: get-payment-methods
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -186,7 +180,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetPaymentMethodsError"   
+                $ref: "#/components/schemas/GetPaymentMethodsError"
   /api-caja/make-payment:
     post:
       tags:
@@ -201,6 +195,7 @@ paths:
               $ref: "#/components/schemas/Make_Payment"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -208,7 +203,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MakePayment"
-      
+
         "400":
           description: No se ha proporcionado los parametros correspondientes
           content:
@@ -248,7 +243,7 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/MakePaymentErroTransactionAmount"
   /pull/create-qr:
-     post:
+    post:
       tags:
         - API PULL
       summary: Generar código QR
@@ -261,6 +256,7 @@ paths:
               $ref: "#/components/schemas/Create_Qr_Code"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -269,13 +265,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateQrCode"
         "400":
-          description:  La solicitud no puede ser procesada debido a uno o más errores en los parámetros enviados. 
+          description: La solicitud no puede ser procesada debido a uno o más errores en los parámetros enviados.
           content:
             application/json:
               schema:
-               oneOf:
-                - $ref: "#/components/schemas/CreateQrCodeNoParameters"
-                - $ref: "#/components/schemas/CreateQrCodeWrongType"
+                oneOf:
+                  - $ref: "#/components/schemas/CreateQrCodeNoParameters"
+                  - $ref: "#/components/schemas/CreateQrCodeWrongType"
         "403":
           description: Sin permisos para acceder al recurso
           content:
@@ -303,7 +299,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateQrCodeErrorTransactionAmount"
   /pull/get-info-qr:
-     post:
+    post:
       tags:
         - API PULL
       summary: Obtener información código QR
@@ -316,6 +312,7 @@ paths:
               $ref: "#/components/schemas/Get_Info_Qr"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -350,12 +347,12 @@ paths:
                   - $ref: "#/components/schemas/GetInfoQrErrorConnectingDb"
                   - $ref: "#/components/schemas/GetInfoQrErrorGettingQR"
   /pull/cancel-qr:
-     post:
+    post:
       tags:
         - API PULL
       summary: Cancelar código QR
       description: Cancela el código QR generado
-      operationId: cancel-qr
+      operationId: cancel-qr-pull
       requestBody:
         content:
           application/json:
@@ -363,6 +360,7 @@ paths:
               $ref: "#/components/schemas/Cancel_Qr"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -397,12 +395,12 @@ paths:
                   - $ref: "#/components/schemas/CancelQrErrorConnectingDb"
                   - $ref: "#/components/schemas/CancelQrErrorCancellingQR"
   /red-digital/create-qr:
-     post:
+    post:
       tags:
         - RED DIGITAL
       summary: Generar código QR
       description: Genera el código qr que será escaneado por el cliente
-      operationId: create-qr-code
+      operationId: red-digital-create-qr-code
       requestBody:
         content:
           application/json:
@@ -410,6 +408,7 @@ paths:
               $ref: "#/components/schemas/Create_Qr_Code_Red_Digital"
       security:
         - api_key:
+            - ""
       responses:
         "200":
           description: Operación exitosa
@@ -571,213 +570,6 @@ paths:
       security:
         - api_key:
             - "leer: solicitudes de crédito"
-  /users:
-    get:
-      tags:
-        - users
-      summary: Listar usuarios
-      description: Retorna la lista de usuarios registrados en el comercio
-      operationId: getPetById
-      parameters:
-        - name: Authorization
-          in: header
-          description: Token de autorización
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Operación exitosa
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Credit_Application"
-        "401":
-          description: No autenticado
-        "403":
-          description: No autorizado
-        "500":
-          description: Error del Servidor
-      security:
-        - api_key:
-            - "leer: solicitudes de crédito"
-    post:
-      tags:
-        - Usuarios
-      summary: Crear usuario
-      description: Crea un usuario en el sistema asociado a un comercio
-      operationId: createUser
-      responses:
-        "200":
-          description: Operación exitosa
-        "401":
-          description: No autenticado
-        "403":
-          description: No autorizado
-        "500":
-          description: Error del Servidor
-        default:
-          description: successful operation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Credit_Application"
-        description: Created user object
-        required: true
-      security:
-        - api_key:
-            - "escribir: usuarios"
-
-  "/users/{id}":
-    get:
-      tags:
-        - Usuarios
-      summary: Obtener usuario por Id
-      description: "Retorna el usuario asociado al Id especificado"
-      operationId: getUserByName
-      parameters:
-        - name: id
-          in: path
-          description: "The name that needs to be fetched. Use user1 for testing. "
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Id suministrado inválido
-        "401":
-          description: No authenticado
-        "403":
-          description: No autorizado
-        "404":
-          description: Usuario no encontrado
-      security:
-        - api_key:
-            - "leer: solicitud de crédito"
-    put:
-      tags:
-        - Usuarios
-      summary: Actualizar usuario
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-        - name: id
-          in: path
-          description: name that need to be updated
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: User is updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Invalid user supplied
-        "404":
-          description: User not found
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/User"
-        description: Updated user object
-        required: true
-    delete:
-      tags:
-        - Usuarios
-      summary: Delete user
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-        - name: id
-          in: path
-          description: The name that needs to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        "204":
-          description: User is deleted
-        "400":
-          description: Invalid username supplied
-        "404":
-          description: User not found
-  /user/login:
-    get:
-      tags:
-        - Usuarios
-      summary: Logs user into the system
-      description: "Finaliza la sesión usuario"
-      operationId: loginUser
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: successful operation
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-            X-Expires-After:
-              description: date in UTC when token expires
-              schema:
-                type: string
-                format: date-time
-          content:
-            application/json:
-              schema:
-                type: string
-              examples:
-                response:
-                  value: OK
-            application/xml:
-              schema:
-                type: string
-              examples:
-                response:
-                  value: <Message> OK </Message>
-            text/plain:
-              examples:
-                response:
-                  value: OK
-        "400":
-          description: Invalid username/password supplied
-  /user/logout:
-    get:
-      tags:
-        - Usuarios
-      summary: Logs out current logged in user session
-      description: ""
-      operationId: logoutUser
-      responses:
-        default:
-          description: successful operation
   /qr:
     post:
       tags:
@@ -808,6 +600,35 @@ paths:
         - api_key:
             - "leer: desembolso"
             - "escribir: desembolso"
+  /qr/cancel:
+    post:
+      operationId: cancel-qr
+      tags:
+        - Desembolsos
+      summary: Cancelar código QR
+      description: "Este recurso cancela un código QR perteneciente al comercio previo a su estado activo."
+      requestBody:
+        $ref: "#/components/requestBodies/qrCancel"
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/qrCancelResponse"
+        "400":
+          description: Código QR no sumunistrado
+        "401":
+          description: Sin autenticación
+        "403":
+          description: Sin autorización
+        "404":
+          description: Código QR no encontrado
+        "500":
+          description: Error de Servidor
+      security:
+        - api_key:
+            - "escritura: cancelar desembolso"
   /qr/status:
     get:
       tags:
@@ -867,6 +688,147 @@ paths:
         - api_key:
             - "leer: desembolso"
             - "escribir: desembolso"
+  /integrations/e-commerce/orders:
+    post:
+      tags:
+        - e-Commerce
+      summary: Crear orden
+      description: "Este recurso crea una orden."
+      operationId: e-commerce-orders-create
+      requestBody:
+        $ref: "#/components/requestBodies/eCommerceOrdersCreateOrder"
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersCreateResponse"
+        "400":
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersCreateResponse400"
+        "401":
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse401"
+        "403":
+          description: Sin autorización
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse403"
+        "500":
+          description: Error de Servidor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse500"
+      security:
+        - API-Key:
+            - "Escritura: Crear una orden"
+  /integrations/e-commerce/orders/cancel:
+    post:
+      tags:
+        - e-Commerce
+      summary: Cancelar orden
+      description: "Este recurso cancela una orden."
+      operationId: e-commerce-orders-cancel
+      requestBody:
+        $ref: "#/components/requestBodies/eCommerceOrdersCancel"
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersCancelResponse"
+        "400":
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersCancelResponse400"
+        "401":
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse401"
+        "403":
+          description: Sin autorización
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse403"
+        "404":
+          description: Orden no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse404"
+        "500":
+          description: Error de Servidor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse500"
+      security:
+        - API-Key:
+            - "Escritura: Cancelar una orden"
+  /integrations/e-commerce/orders/status:
+    post:
+      tags:
+        - e-Commerce
+      summary: Estado de la orden
+      description: "Este recurso retorna el estado de una orden."
+      operationId: e-commerce-orders-status
+      requestBody:
+        $ref: "#/components/requestBodies/eCommerceOrdersStatus"
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersStatusResponse"
+        "400":
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersStatusResponse400"
+        "401":
+          description: Sin autenticación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse401"
+        "403":
+          description: Sin autorización
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse403"
+        "404":
+          description: Transacción no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse404"
+        "500":
+          description: Error de Servidor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eCommerceOrdersResponse500"
+      security:
+        - API-Key:
+            - "Lectura: Ver Estado de una orden"
 components:
   schemas:
     qrResponse:
@@ -892,6 +854,20 @@ components:
         message:
           type: string
           example: "Message example"
+    qrCancelResponse:
+      type: object
+      properties:
+        dataQR:
+          description: Código QR / Pin
+          type: number
+          example: 123456
+        transactionId:
+          description: ID único de transacción
+          type: string
+          example: 64cb0b3030b6e6d24b613553
+        status:
+          type: string
+          example: "CANCELLED"
     qrStatusResponse:
       type: object
       properties:
@@ -1163,7 +1139,7 @@ components:
       type: object
       description: Sin Header
       properties:
-        message: 
+        message:
           type: string
           example: "Amount must be a number"
     CreateQrCodeForbidden:
@@ -1315,7 +1291,7 @@ components:
         updatedAt:
           type: string
           example: "2024-02-14T12:30:00Z"
-          description: Fecha de actualización del desembolso   
+          description: Fecha de actualización del desembolso
     GetInfoQrNoParameters:
       type: object
       description: Sin Header
@@ -1324,13 +1300,6 @@ components:
           type: string
           example: "Missing parameters: dataQR"
     GetInfoQrForbidden:
-      type: object
-      description: Sin Header
-      properties:
-        message:
-          type: string
-          example: "Forbidden"
-    GetInfoQrNotFound:
       type: object
       description: Sin Header
       properties:
@@ -1429,16 +1398,16 @@ components:
         idNumber:
           type: string
           description: "formato X-XXX-XXXX"
-    Get_Payment_Methods:
-       type: object
+    # Get_Payment_Methods:
+    #   type: object
     Make_Payment:
-       type: object
-       required:
-         - creditId
-         - transactionAmount
-         - paymentTypeId
-         - paymentMethod
-       properties:
+      type: object
+      required:
+        - creditId
+        - transactionAmount
+        - paymentTypeId
+        - paymentMethod
+      properties:
         creditId:
           type: number
         transactionAmount:
@@ -1448,12 +1417,12 @@ components:
         paymentMethod:
           type: string
     Create_Qr_Code:
-       type: object
-       required:
-         - amount
-         - lineas
-         - metaData
-       properties:
+      type: object
+      required:
+        - amount
+        - lineas
+        - metaData
+      properties:
         amount:
           type: number
           description: "Monto de la compra"
@@ -1462,20 +1431,29 @@ components:
           items:
             type: string
           description: "Descripción del producto comprado"
-          example: ["CELULARES", "COMPUTADORAS", "LINEA BLANCA", "ELECTRODOMÉSTICOS", "INDUMENTARIA", "CALZADO" ]
+          example:
+            [
+              "CELULARES",
+              "COMPUTADORAS",
+              "LINEA BLANCA",
+              "ELECTRODOMÉSTICOS",
+              "INDUMENTARIA",
+              "CALZADO",
+            ]
         metaData:
           type: object
-          example: {name: "John",lastName: "Doe", email: "john-doe@gmail.com"}
+          example:
+            { name: "John", lastName: "Doe", email: "john-doe@gmail.com" }
           description: "Información adicional útil para identificar al usuario que efectúa la transacción. No se limita a los ejemplos proporcionados."
     Create_Qr_Code_Red_Digital:
-       type: object
-       required:
-         - amount
-         - lineas
-         - metaData
-         - commerceId
-         - deviceId
-       properties:
+      type: object
+      required:
+        - amount
+        - lineas
+        - metaData
+        - commerceId
+        - deviceId
+      properties:
         amount:
           type: number
           description: "Monto de la compra"
@@ -1484,7 +1462,15 @@ components:
           items:
             type: string
           description: "Descripción del producto comprado"
-          example: ["CELULARES", "COMPUTADORAS", "LINEA BLANCA", "ELECTRODOMÉSTICOS", "INDUMENTARIA", "CALZADO" ]
+          example:
+            [
+              "CELULARES",
+              "COMPUTADORAS",
+              "LINEA BLANCA",
+              "ELECTRODOMÉSTICOS",
+              "INDUMENTARIA",
+              "CALZADO",
+            ]
         commerceId:
           type: string
           example: "123456"
@@ -1498,18 +1484,18 @@ components:
           example: '{"name":"John","lastName":"Doe","email":"john-doe@gmail.com"}'
           description: "Información adicional útil para identificar al usuario que efectúa la transacción. No se limita a los ejemplos proporcionados."
     Get_Info_Qr:
-       type: object
-       required:
-         - dataQR
-       properties:
+      type: object
+      required:
+        - dataQR
+      properties:
         dataQR:
           type: number
           description: "Código del QR generado"
     Cancel_Qr:
-       type: object
-       required:
-         - dataQR
-       properties:
+      type: object
+      required:
+        - dataQR
+      properties:
         dataQR:
           type: number
           description: "Código del QR generado"
@@ -1546,6 +1532,20 @@ components:
           description: Monto a consumir en el POS
           type: number
           example: 1000
+    QrCancel:
+      type: object
+      required:
+        - dataQR
+        - transactionId
+      properties:
+        dataQR:
+          type: number
+          description: Código QR
+          example: 123456
+        transactionId:
+          type: string
+          description: ID único de transacción
+
     Invoice:
       type: object
       required:
@@ -1593,6 +1593,151 @@ components:
           enum:
             - ACTIVO
             - INACTIVO
+    eCommerceOrdersStatus:
+      type: object
+      required:
+        - externalOrderId
+      properties:
+        externalOrderId:
+          type: string
+          description: ID único externo de la orden del comercio
+          example: "123456-ABCDE"
+    eCommerceOrdersStatusResponse:
+      type: object
+      properties:
+        externalOrderId:
+          type: string
+          example: 123456-ABCDE
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - APPROVED
+            - CANCELLED
+            - EXPIRED
+            - IN_PROGRESS
+            - REJECTED
+    eCommerceOrdersStatusResponse400:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Parámetro externalOrderId no suministrado"
+    eCommerceOrdersCreate:
+      type: object
+      required:
+        - amount
+        - commerceId
+        - externalOrderId
+        - callbackUrl
+        - callbackBody
+      properties:
+        amount:
+          type: number
+          description: Monto total de la orden.
+          example: 100
+        commerceId:
+          type: string
+          description: ID del comercio.
+          example: "123ABC"
+        externalOrderId:
+          type: string
+          description: ID único externo de la orden del comercio
+          example: "123456-ABCDE"
+        callbackUrl:
+          type: string
+          description: Callback URL de notificación de eventos
+          example: "https://example.com/event"
+        callbackBody:
+          type: string
+          description: Payload para el callback URL
+          example: { id: "externalOrderId", event: "success" }
+    eCommerceOrdersCreateResponse:
+      type: object
+      properties:
+        commerce:
+          type: string
+          example: "123ABC"
+        externalOrderId:
+          type: string
+          example: "123456-ABCDE"
+        amount:
+          type: number
+          example: 100
+        status:
+          type: string
+          example: "IN_PROGRESS"
+        redirectUrl:
+          type: string
+          example: "https://client.crediviva.com.pa/integrations/123ABC/orders/123456-ABCDE"
+    eCommerceOrdersCreateResponse400:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Parámetro externalOrderId no suministrado"
+    eCommerceOrdersCancel:
+      type: object
+      required:
+        - commerceId
+        - externalOrderId
+      properties:
+        commerceId:
+          type: string
+          description: ID del comercio.
+          example: "123ABC"
+        externalOrderId:
+          type: string
+          description: ID único externo de la orden del comercio
+          example: "123456-ABCDE"
+    eCommerceOrdersCancelResponse:
+      type: object
+      properties:
+        commerce:
+          type: string
+          example: "123ABC"
+        externalOrderId:
+          type: string
+          example: "123456-ABCDE"
+        amount:
+          type: number
+          example: 100
+        status:
+          type: string
+          example: "CANCELLED"
+        cancelledBy:
+          type: string
+          example: "E-COMMERCE"
+    eCommerceOrdersCancelResponse400:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Parámetro externalOrderId no suministrado"
+    eCommerceOrdersResponse401:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "API-Key no suministrado"
+    eCommerceOrdersResponse403:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Acceso denegado"
+    eCommerceOrdersResponse404:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Orden no encontrada"
+    eCommerceOrdersResponse500:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error de servidor"
   requestBodies:
     qr:
       content:
@@ -1601,6 +1746,34 @@ components:
             description: QR
             title: "Request Body"
             $ref: "#/components/schemas/Qr"
+    qrCancel:
+      content:
+        application/json:
+          schema:
+            description: QR-cancel
+            title: "Request Body"
+            $ref: "#/components/schemas/QrCancel"
+    eCommerceOrdersCreateOrder:
+      content:
+        application/json:
+          schema:
+            description: e-commerce-orders-create
+            title: "Request Body"
+            $ref: "#/components/schemas/eCommerceOrdersCreate"
+    eCommerceOrdersCancel:
+      content:
+        application/json:
+          schema:
+            description: e-commerce-orders-cancel
+            title: "Request Body"
+            $ref: "#/components/schemas/eCommerceOrdersCancel"
+    eCommerceOrdersStatus:
+      content:
+        application/json:
+          schema:
+            description: e-commerce-orders-status
+            title: "Request Body"
+            $ref: "#/components/schemas/eCommerceOrdersStatus"
     invoice:
       content:
         application/json:
@@ -1620,4 +1793,10 @@ components:
         Para este ejemplo, puedes utilizar el `special-Key` el cual te concede de la autenticación necesaria para consumir los recursos expuestos para las operaciones descritas en el API.
       type: apiKey
       name: Authorization
+      in: header
+    API-Key:
+      description: >
+        API-Key suministrado por Crediviva
+      type: apiKey
+      name: x-api-key
       in: header
