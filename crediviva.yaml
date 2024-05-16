@@ -1146,8 +1146,12 @@ components:
       properties:
         dataQR:
           type: number
-          example: "503212"
+          example: 503212
           description: "Código generado para ser escaneado en el qr"
+        credito:
+          type: number
+          example: 300692
+          description: "Identificador del crédito"
     CreateQrCodeNoParameters:
       type: object
       description: Sin Header
