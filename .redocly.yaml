@@ -1,10 +1,11 @@
-apiDefinitions:
-  main: crediviva.yaml
-  test: crediviva.yaml
-lint:
-  extends:
+apis:
+  main:
+    root: crediviva.yaml
+  test:
+    root: crediviva.yaml
+extends:
     - recommended
-  rules:
+rules:
     tag-description: off
     operation-summary: error
     no-unresolved-refs: error
