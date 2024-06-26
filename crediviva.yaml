@@ -53,6 +53,9 @@ tags:
   - name: API CAJA
     x-displayName: Api Caja
     description: Operaciones en caja comercio
+  - name: API PUNTO PAGO
+    x-displayName: Api Punto Pago
+    description: Operaciones en caja comercio
   - name: Desembolsos
     x-displayName: Desembolsos
     description: Operaciones sobre desembolsos
@@ -94,6 +97,9 @@ x-tagGroups:
   - name: API CAJA
     tags:
       - API CAJA
+  - name: API PUNTO PAGO
+    tags:
+      - API PUNTO PAGO
   - name: API PULL
     tags:
       - API PULL
@@ -242,6 +248,63 @@ paths:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/MakePaymentErroTransactionAmount"
+  /integrations/payment/make-payment/get-balance:
+    post:
+      tags:
+        - API PUNTO PAGO
+      summary: Obtener saldo del cliente
+      description: Obtiene el saldo asociado al cliente
+      operationId: get-balance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Get_Balance_Punto_Pago"
+      security:
+        - api_key:
+            - ""
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/GetBalancePuntoPago"
+                  - $ref: "#/components/schemas/GetBalanceAlreadyPaidPuntoPago"
+                  - $ref: "#/components/schemas/GetBalanceNoIdNumberPuntoPago"
+                  - $ref: "#/components/schemas/GetBalanceForbiddenPuntoPago"
+                  - $ref: "#/components/schemas/GetBalanceErrorConnectingDbPuntoPago"
+                  - $ref: "#/components/schemas/GetBalanceUserNotFoundPuntoPago"
+                  - $ref: "#/components/schemas/GetBalanceCreditNotFoundPuntoPago"
+                  - $ref: "#/components/schemas/GetBalanceInstallmentsNotFoundPuntoPago"
+
+        # "400":
+        #   description: No se ha proporcionado el número de cédula en la solicitud
+        #   content:
+        #     application/json:
+        #       schema:
+        #         $ref: "#/components/schemas/GetBalanceNoIdNumber"
+        # "403":
+        #   description: Sin permisos para acceder al recurso
+        #   content:
+        #     application/json:
+        #       schema:
+        #         $ref: "#/components/schemas/GetBalanceForbidden"
+        # "500":
+        #   description: Error al conectarse a base de datos
+        #   content:
+        #     application/json:
+        #       schema:
+        #         $ref: "#/components/schemas/GetBalanceErrorConnectingDb"
+        # "404":
+        #   description: Recurso no encontrado
+        #   content:
+        #     application/json:
+        #       schema:
+        #         oneOf:
+        #           - $ref: "#/components/schemas/GetBalanceUserNotFound"
+        #           - $ref: "#/components/schemas/GetBalanceCreditNotFound"
+        #           - $ref: "#/components/schemas/GetBalanceInstallmentsNotFound"
   /pull/create-qr:
     post:
       tags:
@@ -929,9 +992,47 @@ components:
         dueDate:
           type: string
           description: Fecha en la que la cuota vence
+    GetBalancePuntoPago:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          description: "Código devuelto por el servicio"
+          example: 200      
+        loanId:
+          type: number
+          description: Identificador único del crédito
+        installmentNumber:
+          type: number
+          description: Plazo correspondiente a la cuota
+        monthlyInstallment:
+          type: number
+          description: Monto inicial de la cuota
+        amountPaid:
+          type: number
+          description: Monto pagado hasta el momento de la cuota
+        remainingAmount:
+          type: number
+          description: Deuda pendiente de la cuota
+        totalDebt:
+          type: number
+          description: Deuda total acumulada
+        dueDate:
+          type: string
+          description: Fecha en la que la cuota vence
     GetBalanceAlreadyPaid:
       type: object
       properties:
+        message:
+          type: string
+          example: "Credit fully paid"
+    GetBalanceAlreadyPaidPuntoPago:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          description: "Código devuelto por el servicio"
+          example: 200      
         message:
           type: string
           example: "Credit fully paid"
@@ -942,10 +1043,32 @@ components:
         message:
           type: string
           example: "IdNumber is missing"
+    GetBalanceNoIdNumberPuntoPago:
+      type: object
+      description: Sin Header
+      properties:
+        statusCode:
+          type: number
+          description: "Código devuelto por el servicio"
+          example: 400
+        message:
+          type: string
+          example: "IdNumber is missing"
     GetBalanceForbidden:
       type: object
       description: Sin Header
       properties:
+        message:
+          type: string
+          example: "Forbidden"
+    GetBalanceForbiddenPuntoPago:
+      type: object
+      description: Sin Header
+      properties:
+        statusCode:
+          type: number
+          description: "Código devuelto por el servicio"
+          example: 403
         message:
           type: string
           example: "Forbidden"
@@ -956,10 +1079,32 @@ components:
         message:
           type: string
           example: "Error when connecting db"
+    GetBalanceErrorConnectingDbPuntoPago:
+      type: object
+      description: Sin Header
+      properties:
+        statusCode:
+          type: number
+          description: "Código devuelto por el servicio"
+          example: 500
+        message:
+          type: string
+          example: "Error when connecting db"
     GetBalanceUserNotFound:
       type: object
       description: Sin Header
       properties:
+        message:
+          type: string
+          example: "User not found"
+    GetBalanceUserNotFoundPuntoPago:
+      type: object
+      description: Sin Header
+      properties:
+        statusCode:
+          type: number
+          description: "Código devuelto por el servicio"
+          example: 404
         message:
           type: string
           example: "User not found"
@@ -970,10 +1115,32 @@ components:
         message:
           type: string
           example: "Credit not found"
+    GetBalanceCreditNotFoundPuntoPago:
+      type: object
+      description: Sin Header
+      properties:
+        statusCode:
+          type: number
+          description: "Código devuelto por el servicio"
+          example: 404
+        message:
+          type: string
+          example: "Credit not found"
     GetBalanceInstallmentsNotFound:
       type: object
       description: Sin Header
       properties:
+        message:
+          type: string
+          example: "Installments not found"
+    GetBalanceInstallmentsNotFoundPuntoPago:
+      type: object
+      description: Sin Header
+      properties:
+        statusCode:
+          type: number
+          description: "Código devuelto por el servicio"
+          example: 404
         message:
           type: string
           example: "Installments not found"
@@ -1390,6 +1557,14 @@ components:
         error:
           type: string
           example: "Invalid refresh token"
+    Get_Balance_Punto_Pago:
+      type: object
+      required:
+        - idNumber
+      properties:
+        idNumber:
+          type: string
+          description: "formato X-XXX-XXXX"
     Get_Balance:
       type: object
       required:
