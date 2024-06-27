@@ -248,7 +248,7 @@ paths:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/MakePaymentErroTransactionAmount"
-  /integrations/payment/make-payment/get-balance:
+  /integrations/payment/get-balance/punto-pago:
     post:
       tags:
         - PUNTO PAGO
